@@ -4,7 +4,6 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 ENV NODE_ENV=production
 RUN npm ci --omit=dev
-RUN npm ci
 COPY frontend .
 RUN npm run build
 
