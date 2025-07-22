@@ -4,16 +4,18 @@ import { MacroChart } from "~/components/macro-chart";
 import { PortfolioSection } from "~/components/portfolio-section";
 
 export const loader = async () => {
-  const res = await fetch("http://localhost:8000/api/macro-compass");
-  if (!res.ok) throw new Error(await res.text());
-  const obj = await res.json(); // { [date: string]: { composite_score: number; … } }
+  const base = process.env.PUBLIC_API_URL;
+  if (!base) throw new Error("Missing PUBLIC_API_URL env var");
 
-  // Turn into array of { date, value }
+  const res = await fetch(`${base}/api/macro-compass`);
+  if (!res.ok) throw new Error(await res.text());
+  const obj = await res.json();
+
+  // Transform as before (e.g. map to array)
   const data = Object.entries(obj).map(([date, row]) => ({
     date,
     value: row.composite_score,
   }));
-
   return { chartData: data };
 };
 
