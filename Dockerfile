@@ -1,5 +1,5 @@
-# Stage 1: Build your Remix frontend
-FROM node:18-alpine AS frontend-build
+# Stage 1: Build Remix on Node 20
+FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
