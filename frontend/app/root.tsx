@@ -1,6 +1,5 @@
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -9,7 +8,7 @@ import {
 import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
-import { ThemeToggle } from "./components/theme-toggle";
+
 import { ThemeProvider } from "next-themes";
 import { Navigation } from "./components/navigation";
 

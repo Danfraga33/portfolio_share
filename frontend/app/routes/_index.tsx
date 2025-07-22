@@ -1,22 +1,32 @@
-import type { MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Await, defer, json, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
+import { ChartLoader } from "~/components/chartLoader";
 import { MacroChart } from "~/components/macro-chart";
 import { PortfolioSection } from "~/components/portfolio-section";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const base = process.env.PUBLIC_API_URL;
-  if (!base) throw new Error("Missing PUBLIC_API_URL env var");
+  if (!base) {
+    throw json({ message: "Missing PUBLIC_API_URL env var" }, { status: 500 });
+  }
 
-  const res = await fetch(`${base}/api/macro-compass`);
-  if (!res.ok) throw new Error(await res.text());
-  const obj = await res.json();
+  // Kick off the fetch but don’t await it
+  const chartPromise = fetch(`${base}/api/macro-compass`)
+    .then((res) => {
+      if (!res.ok) throw new Response(res.statusText, { status: res.status });
+      return res.json();
+    })
+    .then((obj: Record<string, { composite_score: number }>) =>
+      Object.entries(obj).map(([date, row]) => ({
+        date,
+        value: row.composite_score,
+      })),
+    );
 
-  // Transform as before (e.g. map to array)
-  const data = Object.entries(obj).map(([date, row]) => ({
-    date,
-    value: row.composite_score,
-  }));
-  return { chartData: data };
+  return defer({
+    chartData: chartPromise,
+  });
 };
 
 export const meta: MetaFunction = () => {
@@ -36,7 +46,16 @@ export default function Index() {
             <h2 className="text-2xl font-light text-foreground">
               Macro Compass
             </h2>
-            <MacroChart chartData={chartData} />
+            <Suspense fallback={<ChartLoader />}>
+              <Await
+                resolve={chartData}
+                errorElement={
+                  <div className="text-red-500">Failed to load chart.</div>
+                }
+              >
+                {(data) => <MacroChart chartData={data} />}
+              </Await>
+            </Suspense>
           </section>
 
           <PortfolioSection />
