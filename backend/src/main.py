@@ -13,7 +13,7 @@ from .macro_compass import score
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://vibrant-achievement-production.up.railway.app"],
+    allow_origins=["https://vibrant-achievement-production.up.railway.app/"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
