@@ -1,9 +1,18 @@
 # Stage 1: Build Remix on Node 20
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
+
+# Copy your npmrc so engine‑strict=false is in effect
+COPY frontend/.npmrc .npmrc
+
+# Copy package manifests
 COPY frontend/package.json frontend/package-lock.json ./
+
+# Install only production deps
 ENV NODE_ENV=production
 RUN npm ci --omit=dev
+
+# Copy the rest of the frontend code & build
 COPY frontend .
 RUN npm run build
 
