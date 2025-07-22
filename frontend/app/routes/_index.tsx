@@ -57,7 +57,6 @@ export default function Index() {
               </Await>
             </Suspense>
           </section>
-
           <PortfolioSection />
         </div>
       </main>
