@@ -1,0 +1,16 @@
+# Python venvs
+backend/venv/
+backend/__pycache__/
+
+# Node modules & builds
+frontend/node_modules/
+frontend/build/
+frontend/.next/
+
+# Git
+.git
+.gitignore
+
+# Logs, editor files
+*.log
+.vscode/
