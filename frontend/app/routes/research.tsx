@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 
 const themes = [
   "Defense",
-  "Supply Chain re-development",
+  "Supply Chain re-alignment",
   "Commodities",
   "Semiconductor",
   "Artificial Intelligence",
