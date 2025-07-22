@@ -12,18 +12,26 @@ const themes = [
 
 const researchData = {
   Defense: [
-    { title: "Q4 2024 Economic Outlook", url: "#", date: "2024-01-15" },
-    { title: "Inflation Trends Analysis", url: "#", date: "2024-01-10" },
-    { title: "Employment Market Dynamics", url: "#", date: "2024-01-05" },
-  ],
-  "Emerging Technologies": [
-    { title: "AI Investment Landscape 2024", url: "#", date: "2024-01-20" },
     {
-      title: "Quantum Computing Market Analysis",
-      url: "#",
-      date: "2024-01-18",
+      title: "The New Defense Spending Supercycle (2025 Outlook)",
+      url: "https://danfraga33.wixsite.com/my-site-5/post/the-new-defense-spending-supercycle-2025-outlook",
+      date: "2025-05-15",
     },
-    { title: "Biotech Innovation Report", url: "#", date: "2024-01-12" },
+  ],
+  Commodities: [
+    {
+      title: "Commodities Supercycle: A Secular Bull Market Thesis",
+      url: "https://danfraga33.wixsite.com/my-site-5/post/commodities-supercycle-a-secular-bull-market-thesis",
+      date: "2025-01-02",
+    },
+  ],
+  "Supply Chain": [
+    {
+      title:
+        "The Next Industrial Supercycle: My 2025 Investment Thesis on Supply Chain Re-Architecture",
+      url: "https://danfraga33.wixsite.com/my-site-5/post/the-next-industrial-supercycle-my-2025-investment-thesis-on-supply-chain-re-architecture",
+      date: "2025-04-12",
+    },
   ],
 
   Strategy: [
@@ -31,7 +39,13 @@ const researchData = {
       title:
         "The Portfolio In Motion: A Macro Compass, Two Funds, Three-Stock Themes",
       url: "https://danfraga33.wixsite.com/my-site-5/post/the-portfolio-in-motion-a-macro-compass-two-funds-three-stock-themes",
-      date: "2024-01-23",
+      date: "2025-01-23",
+    },
+    {
+      title:
+        "The Top-Down Investor: My High-Leverage Investment Themes for the Next Decade",
+      url: "https://danfraga33.wixsite.com/my-site-5/post/the-top-down-investor-my-high-leverage-investment-themes-for-the-next-decade",
+      date: "2025-01-01",
     },
   ],
 };
