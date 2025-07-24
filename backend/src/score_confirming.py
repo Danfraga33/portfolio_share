@@ -29,9 +29,12 @@ def score_confirming(idx, sell, buy, df):
    conf_conds = [
        sell & elevating_junk_bonds & elevated_initial,
        sell & (elevating_junk_bonds | elevated_initial),
-       buy  & below_wma_junk 
+       sell & calm_junk,
+       buy & below_wma_junk & (df['4w_claims'] < 200_000) & (df['4w_claims'].pct_change(52) <= 0),
+       buy  & below_wma_junk, 
+       buy & calm_junk,
    ]
-   junk_choices = [1, 0.5, -0.5]
+   junk_choices = [1.25, 0.75, 0.25, -0.75, -0.5, 0.25]
    
-   df["score_confirming"] = np.select(conf_conds, junk_choices, default=0.0)
+   df["score_confirming"] = np.select(conf_conds, junk_choices, default=0.0).clip(-1.5,1.5)
    return j95, calm_junk, df

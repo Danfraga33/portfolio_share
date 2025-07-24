@@ -16,11 +16,11 @@ def score_timing(idx, px,big7, big7_wma, sell, buy, buy_zone, crash_zone,df, win
    df["cnt_below"] = cnt_below.reindex(idx)
    df["cnt_above"] = cnt_above.reindex(idx)
    
-   buy_zone_choices    = [-1.0, -0.5]  # in buy zone (strong)
-   not_buy_zone_choices= [-2.0, -1.5]  # in not buy zone (mild)
+   buy_zone_choices    = [-1.2, -0.7]  # in buy zone (strong)
+   not_buy_zone_choices= [-2.0, -1.4]  # in not buy zone (mild)
    
-   normal_sell_choices = [1.0, 0.5]
-   crash_sell_choices  = [2.0, 1.5]
+   normal_sell_choices = [1.0, 0.6]
+   crash_sell_choices  = [2.2, 1.6]
    
    sb1     = sell & (df["cnt_below"] >= 4)
    sb2    = sell & (df["big7_px"] * 1.05 < df["big7_wma"])
@@ -48,6 +48,6 @@ def score_timing(idx, px,big7, big7_wma, sell, buy, buy_zone, crash_zone,df, win
             crash_zone,
             crash_timing,
             normal_timing
-   )
+   ).clip(-2.5, 2.5)
    
    return df
