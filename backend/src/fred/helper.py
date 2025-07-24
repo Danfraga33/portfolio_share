@@ -16,3 +16,4 @@ def to_series(df):
         s = pd.to_numeric(s, errors='coerce')
         return s.sort_index()
     return df
+
