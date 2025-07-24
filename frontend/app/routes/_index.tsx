@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ChartLoader } from "~/components/chartLoader";
 import { MacroChart } from "~/components/macro-chart";
 import { PortfolioSection } from "~/components/portfolio-section";
+import Strategy from "~/components/strategy";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const base = process.env.PUBLIC_API_URL;
@@ -56,6 +57,7 @@ export default function Index() {
                 {(data) => <MacroChart chartData={data} />}
               </Await>
             </Suspense>
+            <Strategy />
           </section>
           <PortfolioSection />
         </div>

@@ -82,10 +82,10 @@ export function PortfolioSection() {
 
   return (
     <section className="space-y-8">
-      <h2 className="text-foreground text-xl font-light">Portfolio</h2>
+      <h2 className="text-xl font-light text-foreground">Portfolio</h2>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-4">
-          <h3 className="text-foreground border-border border-b pb-2 text-lg font-light">
+          <h3 className="border-b border-border pb-2 text-lg font-light text-foreground">
             Funds
           </h3>
           <div className="space-y-4">
@@ -93,7 +93,7 @@ export function PortfolioSection() {
               <div key={index} className="space-y-2">
                 <button
                   onClick={() => setActiveFund(fund.name)}
-                  className={`text-foreground font-medium transition-all ${activeFund === fund.name ? "underline underline-offset-4" : "opacity-70 hover:opacity-100"} `}
+                  className={`font-medium text-foreground transition-all ${activeFund === fund.name ? "underline underline-offset-4" : "opacity-70 hover:opacity-100"} `}
                   style={{
                     cursor: "pointer",
                     background: "none",
@@ -104,7 +104,7 @@ export function PortfolioSection() {
                 >
                   {fund.name}
                 </button>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   {fund.description}
                 </p>
               </div>
@@ -112,33 +112,33 @@ export function PortfolioSection() {
           </div>
         </div>
         <div className="space-y-4">
-          <h3 className="text-foreground border-border border-b pb-2 text-lg font-light">
+          <h3 className="border-b border-border pb-2 text-lg font-light text-foreground">
             Themes
           </h3>
-          <ul className="space-y-2">
+          <ul className="cursor-default space-y-2">
             {activeThemes.map((theme, index) => (
-              <li key={index} className="text-muted-foreground text-sm">
+              <li key={index} className="text-sm text-muted-foreground">
                 {theme}
               </li>
             ))}
           </ul>
         </div>
         <div className="space-y-4">
-          <h3 className="text-foreground border-border border-b pb-2 text-lg font-light">
+          <h3 className="border-b border-border pb-2 text-lg font-light text-foreground">
             Investments
           </h3>
           <div className="space-y-6">
             {Object.entries(activeInvestments).map(([theme, investments]) => (
               <div key={theme} className="space-y-3">
-                <h4 className="text-foreground text-sm font-medium">{theme}</h4>
+                <h4 className="text-sm font-medium text-foreground">{theme}</h4>
                 <ul className="space-y-1">
                   {investments.map((investment, index) => (
                     <li
                       key={index}
-                      className="text-muted-foreground flex items-center justify-between text-sm"
+                      className="flex items-center justify-between text-sm text-muted-foreground"
                     >
                       <span>{investment.name}</span>
-                      <span className="text-foreground/60 ml-2 font-mono text-xs">
+                      <span className="ml-2 font-mono text-xs text-foreground/60">
                         {investment.ticker}
                       </span>
                     </li>
