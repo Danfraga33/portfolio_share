@@ -12,7 +12,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw json({ message: "Missing PUBLIC_API_URL env var" }, { status: 500 });
   }
 
-  // Kick off the fetch but don’t await it
   const chartPromise = fetch(`${base}/api/macro-compass`)
     .then((res) => {
       if (!res.ok) throw new Response(res.statusText, { status: res.status });
