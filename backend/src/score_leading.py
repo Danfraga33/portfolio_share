@@ -27,7 +27,7 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     yc_raw = to_series(fetch_weekly_fred_series("T10Y3M"))
     df["yc"]     = yc_raw.reindex(ix, method="nearest").ffill()
     df["yc_inv"] = (df["yc"] < 0).astype(bool)
-
+    df['deep_inv'] = (df['yc'] < .75).rolling(26, min_periods=1).max().shift(1).fillna(False).astype(bool)
     df["inv_12m"]  = df["yc_inv"].rolling(52, min_periods=1).max().shift(1).fillna(False).astype(bool)
     df["post_inv"] = (~df["yc_inv"]) & df["inv_12m"]
 
@@ -41,6 +41,7 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
 
     score_yc = pd.Series(0.5, index=ix, dtype=float)    # baseline
     score_yc.loc[df["post_inv"]]    = 1.5
+    score_yc.loc[df["deep_inv"]]    = 0.75
     score_yc.loc[df["yc_inv"]]      = 0.5               # stays 0.5 while inverted
     score_yc.loc[df["regime_bull"]] = -1.0              # bull override
     df["score_yc"] = score_yc
@@ -61,12 +62,13 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     extreme = s > liq_95
     strong  = (s > liq_90) & ~extreme
     good    = (s > liq_80) & ~strong
-    weak    = s < 0
-    normal  = ~(extreme | strong | good | weak)
+    balanced = (s >= 0) & s <= good 
+    weak    = (s < 0 ) & s > -0.15
+    drying    = s <= -0.15
 
     base_liq = np.select(
-        [extreme, strong, good, normal, weak],
-        [-3.0,   -2.0,  -1.5,  0.0,    0.75],
+        [extreme, strong, good, balanced, weak, drying],
+        [-3.0, -2, -1.5,  0.0, 0.75, 1,],
         default=np.nan
     )
     base_liq = pd.Series(base_liq, index=ix).ffill().fillna(0.25)
@@ -101,7 +103,6 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     df["liq_extreme"] = extreme
 
     # -------------------- Override rule --------------------
-    strong_or_extreme = strong | extreme
     condition_triggered = (score_yc > 0) & (strong | extreme)
 
     override_active = pd.Series(False, index=df.index)
@@ -116,8 +117,38 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     df["score_leading"] = score_yc.copy()
     df.loc[override_active, "score_leading"] = score_liq.loc[override_active]
 
+# NFCI
+    nfci_raw = to_series(fetch_weekly_fred_series("NFCI")).reindex(ix, method="nearest").ffill()
+    df["nfci"] = nfci_raw
+
+    # Condition 1: NFCI is positive
+    nfci_bear_pos = df["nfci"] > 0
+    nfci_bull_pos = df["nfci"] < -0.30
+
+    # Condition 2: NFCI is rising > 1.5% over last 4 weeks
+    nfci_8w_chg = df["nfci"].diff(8)
+    nfci_rising = nfci_8w_chg > 0.50    
+
+    # Score modifier
+    nfci_adj = pd.Series(0.0, index=ix)
+    nfci_adj.loc[nfci_bear_pos] += 0.5
+    nfci_adj.loc[nfci_rising] += 0.5
+    nfci_adj.loc[nfci_bull_pos] -= 0.25
+
+    # Add to score_leading
+    df["score_leading"] = df["score_leading"] + nfci_adj
 
     sell = df["score_leading"] >= 1
-    buy  = df["score_leading"] <= -1
+    buy  = df["score_leading"] <= -0.5
+    
+    rrp_vacuum = rrp < 50_000
+    tga_surge = tga.diff(4) > 200_000
+
+    liquidity_vacuum = rrp_vacuum & tga_surge
+
+    vacuum_adj = pd.Series(0.0, index=ix)
+    vacuum_adj.loc[liquidity_vacuum] += 0.5
+
+    df["score_leading"] = df["score_leading"] + vacuum_adj
 
     return sell, buy, liq_90, df
