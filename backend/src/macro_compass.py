@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import pandas as pd, numpy as np, yfinance as yf, matplotlib.pyplot as plt
 import os
 from .score_leading import score_leading
-from .score_liquidity import score_liquidity
 from .score_timing import score_timing
 from .score_confirming import score_confirming
 
