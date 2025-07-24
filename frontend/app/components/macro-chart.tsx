@@ -6,6 +6,7 @@ import {
   Line,
   Tooltip,
   ReferenceLine,
+  ReferenceArea,
 } from "recharts";
 
 export function MacroChart({
@@ -18,6 +19,21 @@ export function MacroChart({
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           {/* X‑Axis: show only YYYY‑MM‑DD */}
+          <ReferenceArea
+            y1={-8}
+            y2={-2}
+            stroke="#228B41"
+            fill="#228B22"
+            fillOpacity={0.12}
+          />
+          {/* Red area above 3 */}
+          <ReferenceArea
+            y1={3}
+            y2={5}
+            stroke="#b72222"
+            fill="#B22222"
+            fillOpacity={0.12}
+          />
           <XAxis
             dataKey="date"
             axisLine={false}
@@ -46,7 +62,16 @@ export function MacroChart({
           <Tooltip
             labelFormatter={(label: string) => `Date: ${label.slice(0, 10)}`}
             formatter={(value: any) => [`${value.toFixed(2)}`, "Score"]}
-            contentStyle={{ backgroundColor: "white", borderRadius: 4 }}
+            contentStyle={{
+              backgroundColor: "hsl(var(--card))", // Use your theme’s card color
+              borderRadius: 4,
+              color: "hsl(var(--foreground))", // Use your theme’s foreground/text
+              border: "1px solid hsl(var(--border))", // Optional: for clarity
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+            }}
+            itemStyle={{
+              color: "hsl(var(--muted-foreground))", // Muted for secondary text
+            }}
           />
 
           <Line
