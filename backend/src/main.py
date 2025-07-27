@@ -11,6 +11,8 @@ load_dotenv()
 from .macro_compass import score
 
 app = FastAPI()
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=r"https://.*\.railway\.app",
@@ -18,6 +20,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def read_root():
+    return {"message": "Portfolio Share backend is running."}
 
 @app.get("/api/macro-compass")
 def get_macro_compass():
@@ -45,3 +51,8 @@ def get_macro_compass():
     safe = jsonable_encoder(data)
 
     return JSONResponse(content=safe)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
