@@ -7,6 +7,7 @@ const themes = [
   "Commodities",
   "Semiconductor",
   "Artificial Intelligence",
+  "Quantum Computing",
   "Strategy",
 ];
 

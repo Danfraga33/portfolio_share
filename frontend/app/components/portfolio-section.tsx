@@ -48,6 +48,7 @@ const portfolioData = {
       { name: "Taiwan Semiconductor Manufacturing Co. Ltd.", ticker: "TSM" },
       { name: "ASML Holding N.V.", ticker: "ASML" },
     ],
+    Quantum_Computing: [{ name: "IONQ Inc", ticker: "IONQ" }],
   },
 };
 const themeKeyMap = {
