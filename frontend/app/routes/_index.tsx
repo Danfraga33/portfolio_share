@@ -44,8 +44,9 @@ export default function Index() {
         <div className="space-y-12">
           <section className="space-y-4">
             <h2 className="text-2xl font-light text-foreground">
-              Macro Compass
+              Macro Compass — Strategy for High-Conviction Moves
             </h2>
+
             <Suspense fallback={<ChartLoader />}>
               <Await
                 resolve={chartData}
