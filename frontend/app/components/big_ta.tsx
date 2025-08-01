@@ -12,7 +12,7 @@ const Big_TA = () => {
             &gt; 2
           </span>
           <span className="text-xs font-medium text-red-600/70 dark:text-red-400/70">
-            Big Sell
+            Sell
           </span>
         </div>
 
@@ -27,10 +27,10 @@ const Big_TA = () => {
 
         <div className="flex items-center justify-between rounded-sm bg-green-50/50 px-2 py-1 dark:bg-green-950/10">
           <span className="font-mono text-xs font-medium text-foreground">
-            &lt; -2
+            &lt; -1
           </span>
           <span className="text-xs font-medium text-green-600/70 dark:text-green-400/70">
-            Big Buy
+            Buy
           </span>
         </div>
       </div>

@@ -20,7 +20,7 @@ export function MacroChart({
         <LineChart data={chartData}>
           {/* X‑Axis: show only YYYY‑MM‑DD */}
           <ReferenceArea
-            y1={-8}
+            y1={-6}
             y2={-2}
             stroke="#228B41"
             fill="#228B22"
@@ -49,7 +49,7 @@ export function MacroChart({
             strokeDasharray="3 3"
           />
           <ReferenceLine y={2} stroke="#B22222" strokeDasharray="3 3" />
-          <ReferenceLine y={-2} stroke="#228B22" strokeDasharray="3 3" />
+          <ReferenceLine y={-1} stroke="#228B22" strokeDasharray="3 3" />
           {/* Y‑Axis: fix domain from –8 to +5 */}
           <YAxis
             domain={[-8, 5]}
