@@ -47,11 +47,14 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     df["score_yc"] = score_yc
 
     # -------------------- Liquidity --------------------
+    reserves  = to_series(fetch_quarterly_fred_series_weekly("WRESBAL" )).reindex(ix, method="nearest").ffill()
     m2  = to_series(fetch_monthly_fred_series("M2SL" )).reindex(ix, method="nearest").ffill()
     tga = to_series(fetch_weekly_fred_series_friday("WTREGEN")).reindex(ix, method="nearest").ffill()
     rrp = to_series(fetch_weekly_fred_series("RRPONTSYD")).reindex(ix, method="nearest").fillna(0).bfill().ffill()
+    
+    df["reserves_change"] = reserves.diff(2)
 
-    df["net_liq"]          = m2 - tga - rrp
+    df["net_liq"] = reserves - tga - rrp
     df["net_liq_6m"]       = df["net_liq"].pct_change(26)
     df["net_liq_6m_sust"]  = df["net_liq_6m"].rolling(4, min_periods=1).mean()
 
