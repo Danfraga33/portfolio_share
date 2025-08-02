@@ -18,7 +18,6 @@ export function MacroChart({
     <div className="h-64 w-full rounded-lg border border-border bg-card p-4">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
-          {/* X‑Axis: show only YYYY‑MM‑DD */}
           <ReferenceArea
             y1={-6}
             y2={-2}
@@ -26,10 +25,9 @@ export function MacroChart({
             fill="#228B22"
             fillOpacity={0.12}
           />
-          {/* Red area above 3 */}
           <ReferenceArea
             y1={3}
-            y2={5}
+            y2={6}
             stroke="#b72222"
             fill="#B22222"
             fillOpacity={0.12}
@@ -50,9 +48,9 @@ export function MacroChart({
           />
           <ReferenceLine y={2} stroke="#B22222" strokeDasharray="3 3" />
           <ReferenceLine y={-1} stroke="#228B22" strokeDasharray="3 3" />
-          {/* Y‑Axis: fix domain from –8 to +5 */}
+
           <YAxis
-            domain={[-8, 5]}
+            domain={[-8, 6]}
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
@@ -63,14 +61,18 @@ export function MacroChart({
             labelFormatter={(label: string) => `Date: ${label.slice(0, 10)}`}
             formatter={(value: any) => [`${value.toFixed(2)}`, "Score"]}
             contentStyle={{
-              backgroundColor: "hsl(var(--card))", // Use your theme’s card color
+              backgroundColor: "hsl(var(--card))",
               borderRadius: 4,
-              color: "hsl(var(--foreground))", // Use your theme’s foreground/text
-              border: "1px solid hsl(var(--border))", // Optional: for clarity
+              color: "hsl(var(--foreground))",
+              border: "1px solid hsl(var(--border))",
               boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              fontSize: "clamp(0.75rem, 2vw, 0.875rem)", // Responsive font size
+              padding: "clamp(6px, 1.5vw, 8px)", // Responsive padding
+              maxWidth: "min(250px, 90vw)", // Responsive max width
             }}
             itemStyle={{
-              color: "hsl(var(--muted-foreground))", // Muted for secondary text
+              color: "hsl(var(--muted-foreground))",
+              fontSize: "clamp(0.7rem, 1.8vw, 0.8rem)", // Smaller item text on mobile
             }}
           />
 
