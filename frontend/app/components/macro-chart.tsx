@@ -14,8 +14,26 @@ export function MacroChart({
 }: {
   chartData: Array<{ date: string; value: number }>;
 }) {
+  // Function to calculate tick interval based on data length
+  const getTickInterval = (dataLength: number) => {
+    if (dataLength <= 10) return 0; // Show all ticks
+    if (dataLength <= 30) return Math.floor(dataLength / 8);
+    if (dataLength <= 60) return Math.floor(dataLength / 6);
+    return Math.floor(dataLength / 5); // Show ~5 ticks for large datasets
+  };
+
+  // Format date for display (shorter format)
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "2-digit",
+    });
+  };
+
   return (
-    <div className="h-64 w-full rounded-lg border border-border bg-card p-4">
+    <div className="h-64 w-full rounded-lg border border-border bg-card p-2">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <ReferenceArea
@@ -36,9 +54,16 @@ export function MacroChart({
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-            tickFormatter={(dateStr: string) => dateStr.slice(0, 10)}
-            interval="preserveStartEnd"
+            tick={{
+              fontSize: 11,
+              fill: "hsl(var(--muted-foreground))",
+              angle: -45,
+              textAnchor: "end",
+              height: 60,
+            }}
+            tickFormatter={formatDate}
+            interval={getTickInterval(chartData.length)}
+            height={70} // Increased height to accommodate angled text
           />
           <ReferenceLine
             y={0}
@@ -56,9 +81,17 @@ export function MacroChart({
             tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
           />
 
-          {/* Tooltip: show date + value on hover */}
+          {/* Tooltip: show full date + value on hover */}
           <Tooltip
-            labelFormatter={(label: string) => `Date: ${label.slice(0, 10)}`}
+            labelFormatter={(label: string) => {
+              const date = new Date(label);
+              return `Date: ${date.toLocaleDateString("en-US", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}`;
+            }}
             formatter={(value: any) => [`${value.toFixed(2)}`, "Score"]}
             contentStyle={{
               backgroundColor: "hsl(var(--card))",
@@ -66,13 +99,13 @@ export function MacroChart({
               color: "hsl(var(--foreground))",
               border: "1px solid hsl(var(--border))",
               boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              fontSize: "clamp(0.75rem, 2vw, 0.875rem)", // Responsive font size
-              padding: "clamp(6px, 1.5vw, 8px)", // Responsive padding
-              maxWidth: "min(250px, 90vw)", // Responsive max width
+              fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
+              padding: "clamp(6px, 1.5vw, 8px)",
+              maxWidth: "min(250px, 90vw)",
             }}
             itemStyle={{
               color: "hsl(var(--muted-foreground))",
-              fontSize: "clamp(0.7rem, 1.8vw, 0.8rem)", // Smaller item text on mobile
+              fontSize: "clamp(0.7rem, 1.8vw, 0.8rem)",
             }}
           />
 
