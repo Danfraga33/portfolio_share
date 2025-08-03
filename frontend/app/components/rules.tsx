@@ -2,7 +2,7 @@ import React from "react";
 
 const Rules = () => {
   return (
-    <div className="max-w-xs rounded-md border border-border bg-card p-3">
+    <div className="rounded-md border border-border bg-card p-3">
       <h4 className="mb-2 text-sm font-medium text-foreground">
         Investing Rules
       </h4>
