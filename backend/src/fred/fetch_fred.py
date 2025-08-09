@@ -33,6 +33,30 @@ def fetch_monthly_fred_series(series_id):
     else:
         raise Exception(f"FRED API error {response.status_code}: {response.text}")
      
+def fetch_sat_weekly_fred_series(series_id):
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {
+        'series_id': series_id,
+        'api_key': FRED_API_KEY,
+        'file_type': 'json',
+        'sort_order': 'desc',
+        'observation_start': DATA_FROM_DATE,
+        'frequency': 'wesa'
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        df = pd.DataFrame(data['observations'])
+        df = df[df['value'] != '.']
+        df['value'] = pd.to_numeric(df['value'])
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.sort_values('date')
+        df = df[['date', 'value']].reset_index(drop=True)
+        return df
+    else:
+        raise Exception(f"FRED API error {response.status_code}: {response.text}")     
+    
+    
 def fetch_weekly_fred_series(series_id):
     url = "https://api.stlouisfed.org/fred/series/observations"
     params = {
