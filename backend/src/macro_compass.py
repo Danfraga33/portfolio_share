@@ -17,8 +17,13 @@ def score(window: int = 50):
     rrp_raw  = to_series(fetch_weekly_fred_series("RRPONTSYD"))     
     junk_raw = to_series(fetch_weekly_fred_series("BAMLH0A0HYM2"))
     start_ix = max(s.index[0] for s in (yc_raw, m2_raw, tga_raw, rrp_raw, junk_raw))
-    end_ix   = min(s.index[-1] for s in (yc_raw, m2_raw, tga_raw, rrp_raw, junk_raw))
-    idx = pd.date_range(start=start_ix, end=end_ix, freq="W-FRI")
+    today = pd.Timestamp.today().normalize()
+    last_fri = pd.date_range(end=today, freq="W-FRI", periods=1)[0]
+    if start_ix > last_fri:
+        last_fri = start_ix
+
+    idx = pd.date_range(start=start_ix, end=last_fri, freq="W-FRI")    
+    # end_ix   = min(s.index[-1] for s in (yc_raw, m2_raw, tga_raw, rrp_raw, junk_raw))
     df = pd.DataFrame(index=idx)
     big7 = ["AMZN","NVDA","META","GOOGL","AAPL","MSFT","AVGO"]
     px = (yf.download(big7, start=start_date, auto_adjust=True, progress=False)["Close"])
@@ -48,11 +53,12 @@ def score(window: int = 50):
         )
     df["sell_signal"] = (df["composite_score"] > 3).astype(int)
     df["buy_signal"]  = (df["composite_score"] <= -2).astype(int)
-
+    for name, s in {"YC": yc_raw, "M2": m2_raw, "TGA": tga_raw, "RRP": rrp_raw, "HY": junk_raw}.items():
+        print(name, "last:", s.index[-1].date())
     for lbl, a, b in (
             ("2007-03→2008-06","2007-06-01","2010-06-30"),
             ("2019-01→2020-06","2017-01-01","2019-01-01"),
-            ("2024-09→2025-06","2019-08-01","2021-06-30")
+            ("2024-09→2025-06","2025-06-01","2025-08-10")
         ):
             m = (df.index >= a) & (df.index <= b)
             print(f"\n── {lbl} ──")
