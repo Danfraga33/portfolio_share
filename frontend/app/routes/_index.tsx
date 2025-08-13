@@ -36,17 +36,69 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+// Component to display the latest value
+function LatestValue({
+  chartData,
+}: {
+  chartData: Array<{ date: string; value: number }>;
+}) {
+  // Sort by date to ensure we get the latest value
+  const sortedData = [...chartData].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+
+  const latestEntry = sortedData[sortedData.length - 1];
+
+  if (!latestEntry) {
+    return <div className="text-muted-foreground">No data available</div>;
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <span className="text-sm text-muted-foreground">Latest Value:</span>
+      <span className="text-lg font-medium text-foreground">
+        {latestEntry.value.toFixed(2)}
+      </span>
+      <span className="text-xs text-muted-foreground">
+        ({new Date(latestEntry.date).toLocaleDateString()})
+      </span>
+    </div>
+  );
+}
+
 export default function Index() {
   const { chartData } = useLoaderData<typeof loader>();
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-12">
           <section className="space-y-4">
-            <h2 className="text-2xl font-light text-foreground">
-              Macro Compass — Strategy for High-Conviction Moves
-            </h2>
-
+            <section className="flex items-center justify-between">
+              <h2 className="text-2xl font-light text-foreground">
+                Macro Compass — Strategy for High-Conviction Moves
+              </h2>
+              <div>
+                <Suspense
+                  fallback={
+                    <div className="text-muted-foreground">
+                      Loading latest value...
+                    </div>
+                  }
+                >
+                  <Await
+                    resolve={chartData}
+                    errorElement={
+                      <div className="text-red-500">
+                        Failed to load latest value.
+                      </div>
+                    }
+                  >
+                    {(data) => <LatestValue chartData={data} />}
+                  </Await>
+                </Suspense>
+              </div>
+            </section>
             <Suspense fallback={<ChartLoader />}>
               <Await
                 resolve={chartData}
