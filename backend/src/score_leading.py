@@ -30,6 +30,10 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     df['deep_inv'] = (df['yc'] < -0.75).rolling(26, min_periods=1).max().shift(1).fillna(False).astype(bool)
     df["inv_12m"]  = df["yc_inv"].rolling(52, min_periods=1).max().shift(1).fillna(False).astype(bool)
     df["post_inv"] = (~df["yc_inv"]) & df["inv_12m"]
+    payems = to_series(fetch_monthly_fred_series("PAYEMS")).reindex(ix, method="nearest").ffill()
+    payems_yoy = payems.pct_change(12) * 100  # % YoY
+    payems_soft = (payems_yoy < 1.0) & (payems_yoy.diff() < 0)
+
 
     bull_start = df["yc"] >= 2.5
     bull_end   = df["yc"] < 0
@@ -141,7 +145,10 @@ def score_leading(*, idx: pd.DatetimeIndex, valid: pd.Timestamp, df: pd.DataFram
     # Add to score_leading
     df["score_leading"] = df["score_leading"] + nfci_adj
 
-    sell = df["score_leading"] >= 1
+    sell = ((df["score_leading"] >= 1.5)
+        .rolling(2, min_periods=2)
+        .sum() == 2)
+    sell = sell & payems_soft
     buy  = df["score_leading"] <= -0.5
     
     rrp_vacuum = rrp < 50
