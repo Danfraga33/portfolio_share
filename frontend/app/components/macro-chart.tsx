@@ -44,7 +44,7 @@ export function MacroChart({
             fillOpacity={0.12}
           />
           <ReferenceArea
-            y1={3}
+            y1={3.5}
             y2={6}
             stroke="#b72222"
             fill="#B22222"
