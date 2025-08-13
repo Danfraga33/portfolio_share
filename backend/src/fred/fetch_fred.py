@@ -83,32 +83,50 @@ def fetch_weekly_fred_series(series_id):
 def fetch_weekly_fred_series_friday(series_id):
     url = "https://api.stlouisfed.org/fred/series/observations"
     params = {
-        'series_id': series_id,
-        'api_key': FRED_API_KEY,
-        'file_type': 'json',
-        'sort_order': 'desc',
-        'observation_start': DATA_FROM_DATE,
-        'frequency': 'w'
+        "series_id": series_id,
+        "api_key": FRED_API_KEY,
+        "file_type": "json",
+        "sort_order": "asc",           # easier to reason about
+        "observation_start": DATA_FROM_DATE,
+        "frequency": "w",              # stay weekly
+        "aggregation_method": "eop",   # end-of-period if FRED needs to aggregate
     }
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        df = pd.DataFrame(data['observations'])
-        df = df[df['value'] != '.']
-        df['value'] = pd.to_numeric(df['value'])
-        df['date'] = pd.to_datetime(df['date'])
-        df = df.sort_values('date')
-        df = df[['date', 'value']].reset_index(drop=True)
-        df = df.set_index('date')
-
-        friday_index = pd.date_range(start=df.index.min(), end=df.index.max(), freq='W-FRI')
-        df_friday = df.reindex(friday_index, method='ffill')
-        df_friday.index.name = 'date'
-        df_friday = df_friday.reset_index()
-
-        return df_friday
-    else:
+    response = requests.get(url, params=params, timeout=30)
+    if response.status_code != 200:
         raise Exception(f"FRED API error {response.status_code}: {response.text}")
+
+    data = response.json()
+    df = pd.DataFrame(data["observations"])
+    df = df[df["value"] != "."]
+
+    # Parse
+    df["value"] = pd.to_numeric(df["value"])
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.set_index("date").sort_index()
+
+    if df.empty:
+        # Return an empty frame in your expected shape
+        out = pd.DataFrame({"date": pd.to_datetime([]), "value": pd.Series([], dtype=float)})
+        return out
+
+    # --- Anchor each observation to its "week ending Friday" ---
+    # This converts whatever day FRED used into the Friday of that same ISO week.
+    week_end_fri = df.index.to_period("W-FRI").to_timestamp("W-FRI")
+    s = df["value"].groupby(week_end_fri).last()  # 'last' is fine for weekly
+
+    # --- Build a Friday index through the latest Friday (today) ---
+    today = pd.Timestamp.today().normalize()
+    last_fri = pd.date_range(end=today, freq="W-FRI", periods=1)[0]
+    fri_idx = pd.date_range(start=s.index.min(), end=last_fri, freq="W-FRI")
+
+    # --- As-of Friday via forward-fill ---
+    s = s.reindex(fri_idx).ffill()
+
+    # Return in your original shape
+    out = s.to_frame("value")
+    out.index.name = "date"
+    return out.reset_index()
+
 
 def fetch_quarterly_fred_series_weekly(series_id):
     url = "https://api.stlouisfed.org/fred/series/observations"
